@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Mr&Mrs Tech Solutions
 
 Modern Django Portfolio Website
@@ -15,3 +16,6 @@ Modern Django Portfolio Website
 - Bootstrap
 - HTML/CSS
 - JavaScript
+=======
+# Manjunath_Portfolio
+>>>>>>> 3615c27d4e988bee77a3ddffd8f8bd293bd831f4
