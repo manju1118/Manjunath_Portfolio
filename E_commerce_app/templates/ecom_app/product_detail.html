@@ -1,0 +1,470 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+.product-section{
+    background:#0B1020;
+    min-height:100vh;
+}
+
+.product-image{
+    width:100%;
+    height:500px;
+    object-fit:cover;
+    border-radius:20px;
+}
+
+.product-title{
+    color:white;
+    font-size:45px;
+    font-weight:700;
+}
+
+.product-price{
+    color:#00D1FF;
+    font-size:40px;
+    font-weight:700;
+}
+
+.product-description{
+    color:#9CA3AF;
+    line-height:1.9;
+    font-size:17px;
+}
+
+.stock-badge{
+    display:inline-block;
+    padding:10px 18px;
+    border-radius:30px;
+    background:#198754;
+    color:white;
+}
+
+.category-badge{
+    display:inline-block;
+    padding:10px 18px;
+    border-radius:30px;
+    background:#7A5CFF;
+    color:white;
+}
+
+.cart-btn{
+    background:linear-gradient(
+        90deg,
+        #00D1FF,
+        #7A5CFF
+    );
+    border:none;
+    color:white;
+    padding:14px 35px;
+}
+
+.buy-btn{
+    border:1px solid #00D1FF;
+    color:#00D1FF;
+    padding:14px 35px;
+}
+
+.related-card{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+    overflow:hidden;
+    height:100%;
+    transition:.4s;
+}
+
+.related-card:hover{
+    transform:translateY(-8px);
+    border-color:#00D1FF;
+}
+
+.related-image{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.related-title{
+    color:white;
+    font-size:18px;
+    font-weight:600;
+}
+
+.related-price{
+    color:#00D1FF;
+    font-weight:700;
+}
+
+.section-title{
+    color:white;
+    font-size:38px;
+    font-weight:700;
+}
+
+@media(max-width:768px){
+
+    .product-title{
+        font-size:30px;
+        margin-top:20px;
+    }
+
+    .product-price{
+        font-size:28px;
+    }
+
+    .product-image{
+        height:300px;
+    }
+
+    .cart-btn,
+    .buy-btn{
+        width:100%;
+        margin-bottom:10px;
+    }
+
+}
+
+</style>
+
+<section class="product-section py-5">
+
+    <!-- messages -->
+     {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="alert alert-success alert-dismissible fade show message-alert">
+
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+    {% endif %}
+<div class="container">
+
+<div class="row g-5 align-items-center">
+
+<div class="col-lg-6">
+
+{% if product.image %}
+
+<img
+src="{{ product.image.url }}"
+class="product-image">
+
+{% endif %}
+
+</div>
+
+<div class="col-lg-6">
+
+<span class="category-badge">
+
+{{ product.category.name }}
+
+</span>
+
+<h1 class="product-title mt-4">
+
+{{ product.title }}
+
+</h1>
+<p class="text-warning">
+
+⭐ {{ average_rating|default:"0"|floatformat:1 }}/5
+
+</p>
+
+<h2 class="product-price">
+
+₹{{ product.price }}
+
+</h2>
+
+<p class="product-description mt-4">
+
+{{ product.description }}
+
+</p>
+<div class="mt-5">
+
+<h3 class="text-white">
+
+⭐ Write A Review
+
+</h3>
+
+<form
+method="POST"
+action="{% url 'add_review' product.slug %}">
+
+{% csrf_token %}
+
+<select
+name="rating"
+class="form-select mb-3">
+
+<option value="5">
+⭐⭐⭐⭐⭐
+</option>
+
+<option value="4">
+⭐⭐⭐⭐
+</option>
+
+<option value="3">
+⭐⭐⭐
+</option>
+
+<option value="2">
+⭐⭐
+</option>
+
+<option value="1">
+⭐
+</option>
+
+</select>
+
+<textarea
+name="comment"
+class="form-control mb-3"
+rows="4"
+placeholder="Write review..."
+required></textarea>
+
+<button
+class="btn btn-info">
+
+Submit Review
+
+</button>
+
+</form>
+<div class="mt-5">
+
+<h3 class="text-white">
+
+Customer Reviews
+
+</h3>
+
+{% for review in reviews %}
+
+<div
+class="border rounded p-3 my-3">
+
+<h5 class="text-info">
+
+{{ review.user.username }}
+
+</h5>
+
+<p class="text-warning">
+
+{{ review.rating }} ⭐
+
+</p>
+
+<p class="text-light">
+
+{{ review.comment }}
+
+</p>
+
+<small class="text-secondary">
+
+{{ review.created_at|date:"d M Y" }}
+
+</small>
+
+</div>
+
+{% empty %}
+
+<p class="text-secondary">
+
+No Reviews Yet
+
+</p>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<p>
+
+<span class="stock-badge">
+
+📦 {{ product.stock }} In Stock
+
+</span>
+
+</p>
+
+<div class="mt-4">
+
+<a
+href="{% url 'add_to_cart' product.slug %}"
+class="btn cart-btn">
+
+🛒 Add To Cart
+
+</a>
+
+<a
+href="#"
+class="btn buy-btn ms-lg-3">
+
+⚡ Buy Now
+
+</a>
+
+<a
+href="{% url 'add_to_wishlist' product.slug %}"
+class="btn btn-outline-danger">
+
+❤️ Wishlist
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Related Products -->
+
+<div class="mt-5">
+
+<h2 class="section-title mb-4">
+
+Related Products
+
+</h2>
+
+<div class="row g-4">
+
+{% for item in related_products %}
+
+<div class="col-md-6 col-lg-3">
+
+<div class="related-card">
+
+{% if item.image %}
+
+<img
+src="{{ item.image.url }}"
+class="related-image">
+
+{% endif %}
+
+<div class="p-3">
+
+<h5 class="related-title">
+
+{{ item.title }}
+
+</h5>
+
+<p class="related-price">
+
+₹{{ item.price }}
+
+</p>
+
+<a
+href="{% url 'product_detail' item.slug %}"
+class="btn btn-outline-info w-100">
+
+View Product
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+<script>
+
+    setTimeout(function(){
+
+        let alerts =
+            document.querySelectorAll('.message-alert');
+
+        alerts.forEach(function(alert){
+
+            alert.style.transition = "opacity 0.5s";
+
+            alert.style.opacity = "0";
+
+            setTimeout(function(){
+
+                alert.remove();
+
+            }, 500);
+
+        });
+
+    }, 2000);
+    /* Scroll Reveal Animation */
+
+    const observer =
+    new IntersectionObserver(
+
+    (entries)=>{
+
+
+    entries.forEach((entry)=>{
+
+        if(entry.isIntersecting){
+
+            entry.target.classList.add(
+                'show'
+            );
+
+        }
+
+    });
+
+
+    },
+
+    {
+    threshold:0.15
+    }
+
+    );
+
+    document
+    .querySelectorAll('.fade-up')
+    .forEach((el)=>{
+
+
+    observer.observe(el);
+
+
+    });
+
+
+    </script>
+{% endblock %}
